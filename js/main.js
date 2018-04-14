@@ -8,6 +8,7 @@ var markers = [];
 document.addEventListener('DOMContentLoaded', (event) => {
   fetchNeighborhoods();
   fetchCuisines();
+  registerSW();
 });
 
 /**
@@ -32,9 +33,9 @@ fillNeighborhoodsHTML = (neighborhoods = self.neighborhoods) => {
   const select = document.getElementById('neighborhoods-select');
   neighborhoods.forEach(neighborhood => {
     const option = document.createElement('option');
-    if (localStorage.getItem("neighborhood") === neighborhood) {
-      option.setAttribute("selected", "selected");
-    }
+    // if (localStorage.getItem("neighborhood") === neighborhood) {
+    //   option.setAttribute("selected", "selected");
+    // }
     option.innerHTML = neighborhood;
     option.value = neighborhood;
     select.append(option);
@@ -51,6 +52,7 @@ fetchCuisines = () => {
       console.error(error);
     } else {
       self.cuisines = cuisines;
+      console.log(cuisines);
       fillCuisinesHTML();
     }
   });
@@ -64,10 +66,10 @@ fillCuisinesHTML = (cuisines = self.cuisines) => {
 
   cuisines.forEach(cuisine => {
     const option = document.createElement('option');
-    if (localStorage.getItem("cuisine") === cuisine) {
-      option.setAttribute("selected", "selected");
-      localStorage.clear();
-    }
+    // if (localStorage.getItem("cuisine") === cuisine) {
+    //   option.setAttribute("selected", "selected");
+    //   localStorage.clear();
+    // }
     option.innerHTML = cuisine;
     option.value = cuisine;
     select.append(option);
@@ -185,4 +187,13 @@ addMarkersToMap = (restaurants = self.restaurants) => {
     });
     self.markers.push(marker);
   });
+}
+
+registerSW = () => {
+  if (navigator.serviceWorker) {
+    navigator.serviceWorker
+      .register("sw.js")
+      .then(registration => console.log("Regitered SW - ", registration))
+      .catch(e => console.log("Failed to Register SW - ", e));
+  }
 }
