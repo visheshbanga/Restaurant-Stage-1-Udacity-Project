@@ -14,11 +14,21 @@ window.initMap = () => {
         center: restaurant.latlng,
         scrollwheel: false
       });
-      fillBreadcrumb();
       DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
     }
   });
-}
+};
+
+/* For Offlice usage */
+document.addEventListener("DOMContentLoaded", event => {
+  fetchRestaurantFromURL((error, restaurant) => {
+    if (error) {
+      console.error(error);
+    } else {
+      fillBreadcrumb();
+    }
+  });
+});
 
 /**
  * Get current restaurant from page URL.
@@ -29,7 +39,8 @@ fetchRestaurantFromURL = (callback) => {
     return;
   }
   const id = getParameterByName('id');
-  if (!id) { // no id found in URL
+  if (!id) { 
+    // no id found in URL
     error = 'No restaurant id in URL'
     callback(error, null);
   } else {
@@ -42,8 +53,8 @@ fetchRestaurantFromURL = (callback) => {
       fillRestaurantHTML();
       callback(null, restaurant)
     });
-  }
-}
+  };
+};
 
 /**
  * Create restaurant HTML and add it to the webpage
@@ -68,7 +79,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   }
   // fill reviews
   fillReviewsHTML();
-}
+};
 
 /**
  * Create restaurant operating hours HTML table and add it to the webpage.
@@ -88,7 +99,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 
     hours.appendChild(row);
   }
-}
+};
 
 /**
  * Create all reviews HTML and add them to the webpage.
@@ -97,6 +108,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h2');
   title.innerHTML = 'Reviews';
+  title.setAttribute("tabindex", "0");
   container.appendChild(title);
 
   if (!reviews) {
@@ -110,7 +122,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
     ul.appendChild(createReviewHTML(review));
   });
   container.appendChild(ul);
-}
+};
 
 /**
  * Create review HTML and add it to the webpage.
@@ -134,7 +146,7 @@ createReviewHTML = (review) => {
   li.appendChild(comments);
 
   return li;
-}
+};
 
 /**
  * Add restaurant name to the breadcrumb navigation menu
@@ -142,6 +154,7 @@ createReviewHTML = (review) => {
 fillBreadcrumb = (restaurant=self.restaurant) => {
   const breadcrumb = document.getElementById('breadcrumb');
   const li = document.createElement('li');
+  li.setAttribute("aria-current", "page");
   li.innerHTML = restaurant.name;
   breadcrumb.appendChild(li);
 }
@@ -150,14 +163,17 @@ fillBreadcrumb = (restaurant=self.restaurant) => {
  * Get a parameter by name from page URL.
  */
 getParameterByName = (name, url) => {
-  if (!url)
+  if (!url) {
     url = window.location.href;
+  }
   name = name.replace(/[\[\]]/g, '\\$&');
   const regex = new RegExp(`[?&]${name}(=([^&#]*)|&|#|$)`),
     results = regex.exec(url);
-  if (!results)
+  if (!results) {
     return null;
-  if (!results[2])
+  }
+  if (!results[2]) {
     return '';
+  }
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
